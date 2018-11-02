@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {BrowserRouter, Route, withRouter} from 'react-router-dom';
 import './index.css';
 import AuthorQuiz from './AuthorQuiz';
 import * as serviceWorker from './serviceWorker';
 import {shuffle, sample} from 'underscore';
+import AddAuthorForm from './AddAuthorForm';
 
 const authors = [
     {
@@ -59,8 +61,25 @@ function onAnswerSelected(answer) {
     render();
 }
 
+function App() {
+    return <AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />;
+}
+
+const AuthorWrapper = withRouter(({history}) => 
+    <AddAuthorForm onAddAuthor={(author) => {
+        authors.push(author);
+        history.push('/');
+    }}/>
+);
+
 function render(){
-    ReactDOM.render(<AuthorQuiz {...state} onAnswerSelected={onAnswerSelected} />, document.getElementById('root'));
+    ReactDOM.render(
+    <BrowserRouter>
+        <React.Fragment>
+            <Route exact path="/" component={App}/>
+            <Route path="/add" component={AuthorWrapper}/>
+        </React.Fragment>
+    </BrowserRouter>, document.getElementById('root'));
 }
 
 render();
